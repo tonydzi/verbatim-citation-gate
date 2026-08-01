@@ -69,6 +69,17 @@ def test_unknown_doc_id_fails_closed_not_raises():
     assert quote_gate("nothing like this anywhere", "does-not-exist", DOCS) == "not_found"
 
 
+def test_changed_document_text_does_not_reuse_stale_normalization():
+    docs = {"changing": "The original quote."}
+
+    assert quote_gate("The original quote.", "changing", docs) == "found"
+
+    docs["changing"] = "The replacement quote."
+
+    assert quote_gate("The replacement quote.", "changing", docs) == "found"
+    assert quote_gate("The original quote.", "changing", docs) == "not_found"
+
+
 def test_normalize_preserves_numbers_and_percent():
     assert "25%" in normalize("...by 25% in...")
     assert "28" in normalize("fell by 28 mg/dL")
