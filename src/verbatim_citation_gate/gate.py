@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import re
 import unicodedata
+from functools import lru_cache
 
 __all__ = ["normalize", "quote_gate", "GateResult"]
 
@@ -83,6 +84,12 @@ def normalize(text: str) -> str:
     return " ".join(text.split())
 
 
+@lru_cache(maxsize=4096)
+def _normalized(text: str) -> str:
+    """Normalize repeated text once, retaining up to 4,096 raw inputs."""
+    return normalize(text)
+
+
 def quote_gate(quote: str, cited_doc_id: str, docs: dict[str, str]) -> GateResult:
     """Check a quote against the document it is attributed to.
 
@@ -99,12 +106,16 @@ def quote_gate(quote: str, cited_doc_id: str, docs: dict[str, str]) -> GateResul
     real quote with a bad citation is reported as ``"misattributed"`` (which is
     what it is) rather than being collapsed into ``"not_found"``.
     """
-    q = normalize(quote)
+    q = _normalized(quote)
     if not q:
         return "not_found"
     cited = docs.get(cited_doc_id)
-    if cited is not None and q in normalize(cited):
+    if cited is not None and q in _normalized(cited):
         return "found"
-    if any(q in normalize(text) for doc_id, text in docs.items() if doc_id != cited_doc_id):
+    if any(
+        q in _normalized(text)
+        for doc_id, text in docs.items()
+        if doc_id != cited_doc_id
+    ):
         return "misattributed"
     return "not_found"
