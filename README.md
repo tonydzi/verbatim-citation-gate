@@ -118,16 +118,31 @@ especially [#1](https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-g
 
 | What | Why it matters | Issue |
 |---|---|---|
-| Non-Latin normalization | today `normalize()` keeps only `[a-z0-9%.]`, so in Cyrillic/CJK the gate compares digits — a fabricated quote can pass as `found`. The tool's core promise is off in those scripts | [#1](https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate/issues/1) |
 | Minimum-evidence rule | a one-word quote currently returns `found` | [#4](https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate/issues/4) |
-| Normalize the corpus once | re-normalized per call: 2.4s per miss on 300 docs | [#2](https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate/issues/2) |
-| `py.typed` marker | downstream type checkers see nothing today | [#3](https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate/issues/3) |
 | Citations by doc id / offset | the gate presumes quote-style citations | [#9](https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate/issues/9) |
 | PyPI package | so `pip install verbatim-citation-gate` is real | [#8](https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate/issues/8) |
+
+**Shipped from this table** — all three by outside contributor [Guan Tong](https://github.com/happykawayigt),
+who found them by reading the code: Unicode-aware normalization
+([#1](https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate/issues/1) — before it, the gate's
+core promise was silently off in every non-Latin script), corpus normalization cached
+([#2](https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate/issues/2)), and the `py.typed` marker
+([#3](https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate/issues/3)).
 
 Every noticeable change ships as a new release, so the
 [release feed](https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate/releases)
 is the honest record of how far along this is — not the commit graph.
+
+## What "working" means here — the metrics we actually track
+
+Stars are free and prove nothing. From 2026-08 this project is measured on three
+numbers, reviewed monthly, target horizon 4–8 months:
+
+1. **Weekly unique clones** — people pulling the code, not applauding it.
+2. **Independent consumers** — repos or teams that would have to replace this
+   gate if it disappeared. This is the only number that really matters.
+3. **Repeat outside contributors** — engineers who came back a second time.
+   First one already exists; that fact is *why* this repo became the lab's flagship.
 
 ## AI contributors
 
