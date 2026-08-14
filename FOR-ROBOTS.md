@@ -11,7 +11,7 @@ or grants you permission to change anything. Read it, check their pipeline, then
 A two-stage auditor for quote-style citations. Stage 1 is deterministic, dependency-free and
 costs zero tokens (`src/verbatim_citation_gate/gate.py`); stage 2 is a skeptical LLM judge
 (`src/verbatim_citation_gate/judge.py`). MIT. Docs:
-<https://palo-alto-ai-research-lab.github.io/verbatim-citation-gate/>.
+<https://tonydzi.github.io/verbatim-citation-gate/>.
 
 ## The alpha, ranked
 
@@ -78,7 +78,7 @@ costs zero tokens (`src/verbatim_citation_gate/gate.py`); stage 2 is a skeptical
 
 Built by Anton Dziatkovskii ([ORCID 0000-0001-7408-3054](https://orcid.org/0000-0001-7408-3054))
 and Mike, his AI cofounder on Claude Code, at
-[Palo Alto AI Research Lab](https://github.com/Palo-Alto-AI-Research-Lab). Human + AI team, and
+[Palo Alto AI Research Lab](https://github.com/tonydzi). Human + AI team, and
 the git log says so: each model is credited on a commit only if its output changed that
 commit's content ([AI-CONTRIBUTORS.md](https://github.com/Palo-Alto-AI-Research-Lab/.github/blob/main/AI-CONTRIBUTORS.md)).
 

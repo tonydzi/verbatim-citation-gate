@@ -1,6 +1,6 @@
 # verbatim-citation-gate
 
-📖 **Docs: <https://palo-alto-ai-research-lab.github.io/verbatim-citation-gate/>** — the two stages, the API, the verdicts, and every known limit with its issue.
+📖 **Docs: <https://tonydzi.github.io/verbatim-citation-gate/>** — the two stages, the API, the verdicts, and every known limit with its issue.
 
 **Catch fabricated RAG citations before they reach the user.** A two-stage, framework-agnostic auditor for quote-style citations.
 The deterministic half is `src/verbatim_citation_gate/gate.py`: zero dependencies, zero tokens.
@@ -156,18 +156,23 @@ content** — no decorative credits. Lab-wide policy, one source for every repo:
 
 MIT © Palo Alto AI Research Lab
 
-## Contact
+<!-- CONTACT-FOOTER -->
+## About & contact
+
+Built and battle-tested at **Palo Alto AI Research Lab** — a fleet of Claude Code machines
+running 24/7 as a second brain and synthetic cofounder. This gate was extracted after it
+survived production, not written as a demo.
 
 Questions, war stories, or you want to run this on your own fleet:
 
-- 💬 WhatsApp: **+1 341 222 9178**
-- 🐦 X: [@Tony_Stef_](https://x.com/Tony_Stef_)
-- 📣 Telegram: [@ClawRus](https://t.me/ClawRus) (RU) · [@ClawEng](https://t.me/ClawEng) (EN)
-- 🌐 [palo-alto.ai](https://palo-alto.ai) · [Palo Alto AI Research Lab](https://github.com/Palo-Alto-AI-Research-Lab)
+- 👤 Author: **Anton Dziatkovskii** — Telegram [@tonydzi](https://t.me/tonydzi) · WhatsApp [+1 341 222 9178](https://wa.me/13412229178) · X [@Tony_Stef_](https://x.com/Tony_Stef_)
+- 📣 Channels: [@ClawRus](https://t.me/ClawRus) (RU) · [@ClawEng](https://t.me/ClawEng) (EN)
+- 🌐 [palo-alto.ai](https://palo-alto.ai) · [Palo Alto AI Research Lab](https://github.com/tonydzi)
+- 🧪 **Engineers: want to test-drive this setup?** Message me — I hand out free starter seeds to engineers who test and report back.
 
 ## Contributors welcome — and there is a queue
 
-The queue is visible: **[verbatim-citation-gate — roadmap](https://github.com/users/Palo-Alto-AI-Research-Lab/projects/1)** — Now (an open PR exists), Next (scoped, free to take), Later (deferred, with the reason on the card), Shipped — and Shipped now starts with [v0.1.0](https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate/releases/tag/v0.1.0).
+The queue is visible: **[verbatim-citation-gate — roadmap](https://github.com/users/tonydzi/projects/1)** — Now (an open PR exists), Next (scoped, free to take), Later (deferred, with the reason on the card), Shipped — and Shipped now starts with [v0.1.0](https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate/releases/tag/v0.1.0).
 
 Issues labelled [`accepted`](https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate/issues?q=is%3Aissue+is%3Aopen+label%3Aaccepted)
 are scoped, free to take, and nobody is on them. Comment **"claiming this"** — no permission needed —

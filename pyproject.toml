@@ -36,7 +36,7 @@ dependencies = []  # the gate is pure stdlib; the judge takes any llm_call you s
 Homepage = "https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate"
 Repository = "https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate"
 Issues = "https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate/issues"
-Documentation = "https://palo-alto-ai-research-lab.github.io/verbatim-citation-gate/"
+Documentation = "https://tonydzi.github.io/verbatim-citation-gate/"
 
 [project.optional-dependencies]
 test = ["pytest>=7"]

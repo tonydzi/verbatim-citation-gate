@@ -8,7 +8,7 @@ authors:
     orcid: "https://orcid.org/0000-0001-7408-3054"
     affiliation: "Palo Alto AI Research Lab"
 repository-code: "https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate"
-url: "https://palo-alto-ai-research-lab.github.io/verbatim-citation-gate/"
+url: "https://tonydzi.github.io/verbatim-citation-gate/"
 license: MIT
 keywords:
   - retrieval-augmented generation
