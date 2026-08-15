@@ -72,7 +72,7 @@ costs zero tokens (`src/verbatim_citation_gate/gate.py`); stage 2 is a skeptical
 - ⛔ Cannot claim: that this makes a RAG system truthful. It checks whether a quote exists and
   whether it establishes the claim. Everything else about the answer is out of scope.
 - ⛔ Cannot claim: a tagged release exists. There is none yet, on purpose, and it is tracked
-  as [issue #10](https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate/issues/10).
+  as [issue #10](https://github.com/tonydzi/verbatim-citation-gate/issues/10).
 
 ## Provenance
 
@@ -80,11 +80,11 @@ Built by Anton Dziatkovskii ([ORCID 0000-0001-7408-3054](https://orcid.org/0000-
 and Mike, his AI cofounder on Claude Code, at
 [Palo Alto AI Research Lab](https://github.com/tonydzi). Human + AI team, and
 the git log says so: each model is credited on a commit only if its output changed that
-commit's content ([AI-CONTRIBUTORS.md](https://github.com/Palo-Alto-AI-Research-Lab/.github/blob/main/AI-CONTRIBUTORS.md)).
+commit's content ([AI-CONTRIBUTORS.md](https://github.com/tonydzi/.github/blob/main/AI-CONTRIBUTORS.md)).
 
 ## Family
 
-Make an LLM reviewer's verdict parseable: [verdict-contract](https://github.com/Palo-Alto-AI-Research-Lab/verdict-contract).
-Evidence instead of self-reports for jobs: [verified-ops-starter](https://github.com/Palo-Alto-AI-Research-Lab/verified-ops-starter).
-Graph memory over markdown notes: [sqlite-graph-memory](https://github.com/Palo-Alto-AI-Research-Lab/sqlite-graph-memory).
-Curated list: [awesome-verified-agents](https://github.com/Palo-Alto-AI-Research-Lab/awesome-verified-agents).
+Make an LLM reviewer's verdict parseable: [verdict-contract](https://github.com/tonydzi/verdict-contract).
+Evidence instead of self-reports for jobs: [verified-ops-starter](https://github.com/tonydzi/verified-ops-starter).
+Graph memory over markdown notes: [sqlite-graph-memory](https://github.com/tonydzi/sqlite-graph-memory).
+Curated list: [awesome-verified-agents](https://github.com/tonydzi/awesome-verified-agents).

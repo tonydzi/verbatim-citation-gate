@@ -7,7 +7,7 @@ authors:
     given-names: Anton
     orcid: "https://orcid.org/0000-0001-7408-3054"
     affiliation: "Palo Alto AI Research Lab"
-repository-code: "https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate"
+repository-code: "https://github.com/tonydzi/verbatim-citation-gate"
 url: "https://tonydzi.github.io/verbatim-citation-gate/"
 license: MIT
 keywords:

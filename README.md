@@ -52,7 +52,7 @@ an unverifiable citation never counts as support.
 Not on PyPI yet — install from the repository:
 
 ```bash
-pip install "git+https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate"
+pip install "git+https://github.com/tonydzi/verbatim-citation-gate"
 
 # from a clone, with the test extra:
 pip install -e ".[test]" && pytest -q
@@ -89,7 +89,7 @@ audit_citation("Body weight did not change.", "veltranib-rct",
 `llm_call` is deliberately the smallest possible contract — `(system, user) → text`
 — so the judge wires to Claude, GPT, Gemini, Mistral, Cohere, or a local Qwen
 without adapters. OpenAI, Cohere, and other one-liners are in
-[`examples/quickstart.py`](https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate/blob/main/examples/quickstart.py).
+[`examples/quickstart.py`](https://github.com/tonydzi/verbatim-citation-gate/blob/main/examples/quickstart.py).
 
 ## Why the gate goes first
 
@@ -109,28 +109,28 @@ LlamaIndex, LangChain, Cohere, Qwen-Agent, …) are welcome.
 
 ## Roadmap
 
-**Now — [v0.1.0](https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate/releases/tag/v0.1.0).**
+**Now — [v0.1.0](https://github.com/tonydzi/verbatim-citation-gate/releases/tag/v0.1.0).**
 The deterministic gate (`gate.py`) and the burden-of-proof judge (`judge.py`), 14 tests green,
 install from git. Known limits are open issues, not footnotes — read them before you rely on it,
-especially [#1](https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate/issues/1).
+especially [#1](https://github.com/tonydzi/verbatim-citation-gate/issues/1).
 
 **Next**, in the order we would take them:
 
 | What | Why it matters | Issue |
 |---|---|---|
-| Minimum-evidence rule | a one-word quote currently returns `found` | [#4](https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate/issues/4) |
-| Citations by doc id / offset | the gate presumes quote-style citations | [#9](https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate/issues/9) |
-| PyPI package | so `pip install verbatim-citation-gate` is real | [#8](https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate/issues/8) |
+| Minimum-evidence rule | a one-word quote currently returns `found` | [#4](https://github.com/tonydzi/verbatim-citation-gate/issues/4) |
+| Citations by doc id / offset | the gate presumes quote-style citations | [#9](https://github.com/tonydzi/verbatim-citation-gate/issues/9) |
+| PyPI package | so `pip install verbatim-citation-gate` is real | [#8](https://github.com/tonydzi/verbatim-citation-gate/issues/8) |
 
 **Shipped from this table** — all three by outside contributor [Guan Tong](https://github.com/happykawayigt),
 who found them by reading the code: Unicode-aware normalization
-([#1](https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate/issues/1) — before it, the gate's
+([#1](https://github.com/tonydzi/verbatim-citation-gate/issues/1) — before it, the gate's
 core promise was silently off in every non-Latin script), corpus normalization cached
-([#2](https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate/issues/2)), and the `py.typed` marker
-([#3](https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate/issues/3)).
+([#2](https://github.com/tonydzi/verbatim-citation-gate/issues/2)), and the `py.typed` marker
+([#3](https://github.com/tonydzi/verbatim-citation-gate/issues/3)).
 
 Every noticeable change ships as a new release, so the
-[release feed](https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate/releases)
+[release feed](https://github.com/tonydzi/verbatim-citation-gate/releases)
 is the honest record of how far along this is — not the commit graph.
 
 ## What "working" means here — the metrics we actually track
@@ -150,7 +150,7 @@ This project is built by a human + AI team, and the git log says so: Claude
 writes most of the code, Codex and Grok review it, Gemini feeds the research.
 Each is credited on a commit **only if its output changed that commit's
 content** — no decorative credits. Lab-wide policy, one source for every repo:
-[AI-CONTRIBUTORS.md](https://github.com/Palo-Alto-AI-Research-Lab/.github/blob/main/AI-CONTRIBUTORS.md).
+[AI-CONTRIBUTORS.md](https://github.com/tonydzi/.github/blob/main/AI-CONTRIBUTORS.md).
 
 ## License
 
@@ -172,18 +172,18 @@ Questions, war stories, or you want to run this on your own fleet:
 
 ## Contributors welcome — and there is a queue
 
-The queue is visible: **[verbatim-citation-gate — roadmap](https://github.com/users/tonydzi/projects/1)** — Now (an open PR exists), Next (scoped, free to take), Later (deferred, with the reason on the card), Shipped — and Shipped now starts with [v0.1.0](https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate/releases/tag/v0.1.0).
+The queue is visible: **[verbatim-citation-gate — roadmap](https://github.com/users/tonydzi/projects/1)** — Now (an open PR exists), Next (scoped, free to take), Later (deferred, with the reason on the card), Shipped — and Shipped now starts with [v0.1.0](https://github.com/tonydzi/verbatim-citation-gate/releases/tag/v0.1.0).
 
-Issues labelled [`accepted`](https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate/issues?q=is%3Aissue+is%3Aopen+label%3Aaccepted)
+Issues labelled [`accepted`](https://github.com/tonydzi/verbatim-citation-gate/issues?q=is%3Aissue+is%3Aopen+label%3Aaccepted)
 are scoped, free to take, and nobody is on them. Comment **"claiming this"** — no permission needed —
 and it is yours for 7 days. New here? Start with
-[`good first issue`](https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
+[`good first issue`](https://github.com/tonydzi/verbatim-citation-gate/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
 
 **You keep the copyright to your code.** No CLA, no assignment, ever — your contribution goes in
 under this repo's existing license, the same terms as ours. We answer every issue and PR within
 48 hours, including "no, and here is why"; our silence is our bug, so ping the thread.
 
-Full deal: [CONTRIBUTING.md](https://github.com/Palo-Alto-AI-Research-Lab/.github/blob/main/CONTRIBUTING.md)
+Full deal: [CONTRIBUTING.md](https://github.com/tonydzi/.github/blob/main/CONTRIBUTING.md)
 
 ---
 

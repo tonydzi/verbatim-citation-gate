@@ -61,7 +61,7 @@ changes, and one where it must not.
 
 Your copyright stays yours, there is no CLA, and issues labelled `accepted` are free to take —
 comment "claiming this". Full terms:
-[CONTRIBUTING.md](https://github.com/Palo-Alto-AI-Research-Lab/.github/blob/main/CONTRIBUTING.md).
+[CONTRIBUTING.md](https://github.com/tonydzi/.github/blob/main/CONTRIBUTING.md).
 
 If an AI wrote your change, say so in the PR and confirm you ran it. That is welcome here — we do
 it daily. Unread generated code is the one thing that gets closed on sight.

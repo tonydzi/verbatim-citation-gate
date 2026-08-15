@@ -33,9 +33,9 @@ classifiers = [
 dependencies = []  # the gate is pure stdlib; the judge takes any llm_call you supply
 
 [project.urls]
-Homepage = "https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate"
-Repository = "https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate"
-Issues = "https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate/issues"
+Homepage = "https://github.com/tonydzi/verbatim-citation-gate"
+Repository = "https://github.com/tonydzi/verbatim-citation-gate"
+Issues = "https://github.com/tonydzi/verbatim-citation-gate/issues"
 Documentation = "https://tonydzi.github.io/verbatim-citation-gate/"
 
 [project.optional-dependencies]
