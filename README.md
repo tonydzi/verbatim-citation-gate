@@ -149,8 +149,8 @@ especially [#1](https://github.com/tonydzi/verbatim-citation-gate/issues/1).
 | Citations by doc id / offset | the gate presumes quote-style citations | [#9](https://github.com/tonydzi/verbatim-citation-gate/issues/9) |
 | PyPI package | so `pip install verbatim-citation-gate` is real | [#8](https://github.com/tonydzi/verbatim-citation-gate/issues/8) |
 
-**Shipped from this table** — all three by outside contributor [Guan Tong](https://github.com/happykawayigt),
-who found them by reading the code: Unicode-aware normalization
+**Shipped from this table** — all three fixed by outside contributor [Guan Tong](https://github.com/happykawayigt),
+who claimed them off the issue list and had the first PR open within the hour: Unicode-aware normalization
 ([#1](https://github.com/tonydzi/verbatim-citation-gate/issues/1) — before it, the gate's
 core promise was silently off in every non-Latin script), corpus normalization cached
 ([#2](https://github.com/tonydzi/verbatim-citation-gate/issues/2)), and the `py.typed` marker
