@@ -1,10 +1,37 @@
 # verbatim-citation-gate
 
-📖 **Docs: <https://tonydzi.github.io/verbatim-citation-gate/>** — the two stages, the API, the verdicts, and every known limit with its issue.
+[![tests](https://github.com/tonydzi/verbatim-citation-gate/actions/workflows/tests.yml/badge.svg)](https://github.com/tonydzi/verbatim-citation-gate/actions/workflows/tests.yml)
+[![python](https://img.shields.io/badge/python-3.9%20%E2%80%93%203.13-blue)](https://github.com/tonydzi/verbatim-citation-gate/blob/master/pyproject.toml)
+[![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![docs](https://img.shields.io/badge/docs-github.io-8a63d2)](https://tonydzi.github.io/verbatim-citation-gate/)
 
 **Catch fabricated RAG citations before they reach the user.** A two-stage, framework-agnostic auditor for quote-style citations.
 The deterministic half is `src/verbatim_citation_gate/gate.py`: zero dependencies, zero tokens.
 The model half is `src/verbatim_citation_gate/judge.py`, and plugs into whatever LLM your pipeline already speaks.
+
+![Four cited claims audited: a fabrication, a frankenquote and a misattributed quote are rejected for zero tokens; only the one real quote reaches the model.](docs/demo.gif)
+
+## Quickstart — 30 seconds, no API key
+
+```bash
+pip install "git+https://github.com/tonydzi/verbatim-citation-gate"
+```
+
+```python
+from verbatim_citation_gate import quote_gate
+
+docs = {"veltranib-rct": "... Body weight was unchanged in both arms."}
+
+quote_gate("Body weight was unchanged in both arms.", "veltranib-rct", docs)  # 'found'
+quote_gate("Veltranib produced dramatic weight loss.", "veltranib-rct", docs)  # 'not_found'
+```
+
+That is stage 1, and it is the whole offline half: no key, no network, no tokens.
+The run in the animation above is [`examples/demo.py`](examples/demo.py) — `python examples/demo.py`
+reproduces it, model calls counted by the demo itself.
+Stage 2 (the judge) needs a model and is one argument away — see [Use](#use) below.
+
+📖 **Docs: <https://tonydzi.github.io/verbatim-citation-gate/>** — the two stages, the API, the verdicts, and every known limit with its issue.
 
 RAG systems love to cite. The problem is *how they fail* — a quote that reads as authoritative and word-for-word can still be one of three things, each with its own case in `tests/test_gate.py`:
 
@@ -110,7 +137,7 @@ LlamaIndex, LangChain, Cohere, Qwen-Agent, …) are welcome.
 ## Roadmap
 
 **Now — [v0.1.0](https://github.com/tonydzi/verbatim-citation-gate/releases/tag/v0.1.0).**
-The deterministic gate (`gate.py`) and the burden-of-proof judge (`judge.py`), 14 tests green,
+The deterministic gate (`gate.py`) and the burden-of-proof judge (`judge.py`), 24 tests green,
 install from git. Known limits are open issues, not footnotes — read them before you rely on it,
 especially [#1](https://github.com/tonydzi/verbatim-citation-gate/issues/1).
 
