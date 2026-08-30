@@ -20,7 +20,7 @@
   "@type": "SoftwareSourceCode",
   "name": "verbatim-citation-gate",
   "description": "A zero-token verbatim gate plus a burden-of-proof judge that catches fabricated, franken- and misattributed quotes in RAG citations.",
-  "codeRepository": "https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate",
+  "codeRepository": "https://github.com/tonydzi/verbatim-citation-gate",
   "programmingLanguage": "Python",
   "license": "https://opensource.org/licenses/MIT",
   "author": { "@type": "Organization", "name": "Palo Alto AI Research Lab" }
@@ -73,11 +73,11 @@
 Maintained by the <a href="https://tonydzi.github.io/">Palo Alto AI Research Lab</a>.</p>
 
 <div class="cta">
-  <a class="primary" href="https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate">Repository</a>
+  <a class="primary" href="https://github.com/tonydzi/verbatim-citation-gate">Repository</a>
   <a href="#install">Install</a>
   <a href="#api">API</a>
   <a href="#limits">Known limits</a>
-  <a href="https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate/issues?q=is%3Aissue+is%3Aopen+label%3Aaccepted">Open queue</a>
+  <a href="https://github.com/tonydzi/verbatim-citation-gate/issues?q=is%3Aissue+is%3Aopen+label%3Aaccepted">Open queue</a>
 </div>
 
 <h2>The problem</h2>
@@ -123,12 +123,12 @@ establishes the claim:</p>
 <h2 id="install">Install</h2>
 <div class="warn"><b>Not on PyPI yet.</b> Publishing is queued; until it lands, install from the
 repository. Any page or README telling you <code>pip install verbatim-citation-gate</code> is ahead
-of reality — <a href="https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate/issues">tell us</a>
+of reality — <a href="https://github.com/tonydzi/verbatim-citation-gate/issues">tell us</a>
 if you find one we missed.</div>
-<pre><code>pip install "git+https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate"
+<pre><code>pip install "git+https://github.com/tonydzi/verbatim-citation-gate"
 
 # or, from a clone, with the test extra:
-git clone https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate
+git clone https://github.com/tonydzi/verbatim-citation-gate
 cd verbatim-citation-gate &amp;&amp; pip install -e ".[test]" &amp;&amp; pytest -q</code></pre>
 
 <h2>Quickstart</h2>
@@ -153,7 +153,7 @@ audit_citation("Body weight did not change.", "veltranib-rct",
 <p><code>llm_call</code> is deliberately the smallest possible contract —
 <code>(system, user) → text</code> — so the judge wires to Claude, GPT, Gemini, Mistral, Cohere or a
 local Qwen without adapters. One-liners for several vendors are in
-<a href="https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate/blob/master/examples/quickstart.py"><code>examples/quickstart.py</code></a>.</p>
+<a href="https://github.com/tonydzi/verbatim-citation-gate/blob/master/examples/quickstart.py"><code>examples/quickstart.py</code></a>.</p>
 
 <h2 id="api">API</h2>
 <table>
@@ -208,22 +208,22 @@ is a judgment call.</p>
 <tr>
   <td><b>Non-Latin scripts.</b> <code>normalize()</code> keeps only <code>[a-z0-9%.]</code>, so Cyrillic, CJK, Greek and Arabic text is stripped to its digits.</td>
   <td>🔴 In those scripts a fabricated quote can be graded <code>found</code>. Do not run this as your only gate on non-Latin corpora until the fix lands.</td>
-  <td><a href="https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate/issues/1">#1</a></td>
+  <td><a href="https://github.com/tonydzi/verbatim-citation-gate/issues/1">#1</a></td>
 </tr>
 <tr>
   <td><b>Re-normalization on every call.</b> The corpus is normalized per invocation instead of once.</td>
   <td>Measured 2.4 s per miss on a 300-document corpus. Correct, but not a hot path yet.</td>
-  <td><a href="https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate/issues/2">#2</a></td>
+  <td><a href="https://github.com/tonydzi/verbatim-citation-gate/issues/2">#2</a></td>
 </tr>
 <tr>
   <td><b>No <code>py.typed</code> marker.</b></td>
   <td>Downstream type checkers ignore the annotations that are already there.</td>
-  <td><a href="https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate/issues/3">#3</a></td>
+  <td><a href="https://github.com/tonydzi/verbatim-citation-gate/issues/3">#3</a></td>
 </tr>
 <tr>
   <td><b>One-word quotes.</b> A single common word matches almost any document.</td>
   <td><code>found</code> on evidence too thin to mean anything; a minimum-evidence rule is needed.</td>
-  <td><a href="https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate/issues/4">#4</a></td>
+  <td><a href="https://github.com/tonydzi/verbatim-citation-gate/issues/4">#4</a></td>
 </tr>
 </table>
 <p><b>Scope.</b> The gate presumes <b>quote-style</b> citations. If your pipeline cites by document id
@@ -231,26 +231,26 @@ or character offsets, resolve the span to its source text first, then gate that 
 
 <h2>Contributing — there is a queue, and it is real</h2>
 <p>Issues labelled
-<a href="https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate/issues?q=is%3Aissue+is%3Aopen+label%3Aaccepted"><code>accepted</code></a>
+<a href="https://github.com/tonydzi/verbatim-citation-gate/issues?q=is%3Aissue+is%3Aopen+label%3Aaccepted"><code>accepted</code></a>
 are scoped, reproduced, and nobody is on them. Comment <b>“claiming this”</b> — no permission needed —
 and it is yours for 7 days.</p>
 <p><b>You keep the copyright to your code.</b> No CLA, no assignment, ever; your contribution goes in
 under this repo's existing MIT license, the same terms as ours. We answer every issue and PR within
 48 hours, including “no, and here is why” — our silence is our bug, so ping the thread.
-Full deal: <a href="https://github.com/Palo-Alto-AI-Research-Lab/.github/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a>.</p>
+Full deal: <a href="https://github.com/tonydzi/.github/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a>.</p>
 
 <h2>Built by</h2>
 <p>A human + AI team, and the git log says so: Claude writes most of the code, Codex and Grok review
 it, Gemini feeds the research — each credited on a commit only when its output changed that commit.
-Policy: <a href="https://github.com/Palo-Alto-AI-Research-Lab/.github/blob/main/AI-CONTRIBUTORS.md">AI-CONTRIBUTORS.md</a>.</p>
+Policy: <a href="https://github.com/tonydzi/.github/blob/main/AI-CONTRIBUTORS.md">AI-CONTRIBUTORS.md</a>.</p>
 
 <footer>
 <b>Palo Alto AI Research Lab</b> ·
 <a href="https://tonydzi.github.io/">Who we are</a> ·
-<a href="https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate">Repo</a> ·
-<a href="https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate/blob/master/README.md">README</a> ·
+<a href="https://github.com/tonydzi/verbatim-citation-gate">Repo</a> ·
+<a href="https://github.com/tonydzi/verbatim-citation-gate/blob/master/README.md">README</a> ·
 <a href="https://tonydzi.github.io/claude-bible/">claude-bible docs</a> ·
-<a href="https://github.com/Palo-Alto-AI-Research-Lab">All repos</a><br>
+<a href="https://github.com/tonydzi">All repos</a><br>
 MIT © 2026 Palo Alto AI Research Lab. Docs source:
 <code>docs/index.html</code> in this repository — edit it there, it is not generated.
 </footer>
