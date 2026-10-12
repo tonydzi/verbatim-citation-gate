@@ -129,10 +129,20 @@ a real quote whose *sufficiency* is a judgment call.
 
 ## Scope
 
-The gate presumes **quote-style** citations. If your pipeline cites by document
-id or character offsets, resolve the span to its source text first, then gate
-that text. Contributions wiring this into specific frameworks (Haystack,
-LlamaIndex, LangChain, Cohere, Qwen-Agent, …) are welcome.
+For citations expressed as character offsets, use the same fail-closed gate via
+`span_gate(doc_id, start, end, docs)`. Offsets are Python string indices and use
+the half-open interval `[start, end)`. Pass `chunk=(chunk_start, chunk_end)` when
+the retriever returned one chunk; spans outside it are rejected rather than
+silently clipped. An optional `quote=` must match inside the resolved span:
+
+```python
+from verbatim_citation_gate import span_gate
+
+span_gate("report", 10, 42, docs, quote="the cited text", chunk=(0, 100))
+```
+
+Contributions wiring the gates into specific frameworks (Haystack, LlamaIndex,
+LangChain, Cohere, Qwen-Agent, …) are welcome.
 
 ## Roadmap
 

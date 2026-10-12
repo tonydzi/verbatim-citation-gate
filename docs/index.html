@@ -226,8 +226,11 @@ is a judgment call.</p>
   <td><a href="https://github.com/tonydzi/verbatim-citation-gate/issues/4">#4</a></td>
 </tr>
 </table>
-<p><b>Scope.</b> The gate presumes <b>quote-style</b> citations. If your pipeline cites by document id
-or character offsets, resolve the span to its source text first, then gate that text.</p>
+<p><b>Scope.</b> For citations expressed as character offsets, call
+<code>span_gate(doc_id, start, end, docs)</code>. Offsets are Python string indices in the half-open
+interval <code>[start, end)</code>. Pass <code>chunk=(chunk_start, chunk_end)</code> when a retriever
+returned one chunk; spans outside it are rejected rather than clipped. If a citation also carries
+quoted text, pass it as <code>quote=</code> and the normalized quote must occur inside the span.</p>
 
 <h2>Contributing — there is a queue, and it is real</h2>
 <p>Issues labelled

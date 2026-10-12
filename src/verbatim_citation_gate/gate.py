@@ -21,7 +21,7 @@ import re
 import unicodedata
 from functools import lru_cache
 
-__all__ = ["normalize", "quote_gate", "GateResult"]
+__all__ = ["normalize", "quote_gate", "resolve_span", "span_gate", "GateResult"]
 
 # The three outcomes the gate can return.
 GateResult = str  # Literal["found", "misattributed", "not_found"]
@@ -118,4 +118,89 @@ def quote_gate(quote: str, cited_doc_id: str, docs: dict[str, str]) -> GateResul
         if doc_id != cited_doc_id
     ):
         return "misattributed"
+    return "not_found"
+
+
+def _validate_bounds(start: object, end: object, text_length: int) -> str | None:
+    """Return the stable rejection reason for a half-open index pair."""
+    if (
+        not isinstance(start, int)
+        or isinstance(start, bool)
+        or not isinstance(end, int)
+        or isinstance(end, bool)
+    ):
+        return "not_int"
+    if start < 0 or end < 0:
+        return "negative"
+    if start > end:
+        return "inverted"
+    if start == end:
+        return "zero_length"
+    if start > text_length or end > text_length:
+        return "out_of_range"
+    return None
+
+
+def resolve_span(
+    doc_id: str,
+    start: int,
+    end: int,
+    docs: dict[str, str],
+    chunk: tuple[int, int] | None = None,
+) -> tuple[str | None, str | None]:
+    """Resolve a validated half-open character span from ``docs[doc_id]``.
+
+    Offsets are Python string indices (Unicode code points). A valid span
+    returns ``(text, None)``. Invalid input returns ``(None, reason)`` without
+    raising, where ``reason`` is one of ``unknown_doc``, ``not_int``,
+    ``negative``, ``inverted``, ``zero_length``, ``out_of_range``, or
+    ``crosses_chunk``.
+
+    When ``chunk=(chunk_start, chunk_end)`` is supplied, the span must be fully
+    contained by that half-open chunk. It is rejected rather than clipped.
+    """
+    document = docs.get(doc_id)
+    if document is None:
+        return None, "unknown_doc"
+
+    reason = _validate_bounds(start, end, len(document))
+    if reason is not None:
+        return None, reason
+
+    if chunk is not None:
+        if not isinstance(chunk, tuple) or len(chunk) != 2:
+            return None, "not_int"
+        chunk_start, chunk_end = chunk
+        reason = _validate_bounds(chunk_start, chunk_end, len(document))
+        if reason is not None:
+            return None, reason
+        if start < chunk_start or end > chunk_end:
+            return None, "crosses_chunk"
+
+    return document[start:end], None
+
+
+def span_gate(
+    doc_id: str,
+    start: int,
+    end: int,
+    docs: dict[str, str],
+    quote: str | None = None,
+    chunk: tuple[int, int] | None = None,
+) -> GateResult:
+    """Audit a citation supplied as validated character offsets.
+
+    A valid span returns ``"found"``. If ``quote`` is supplied, its normalized
+    text must also occur inside the resolved span. Every invalid offset,
+    unknown document, chunk crossing, or quote mismatch fails closed as
+    ``"not_found"``.
+    """
+    resolved, reason = resolve_span(doc_id, start, end, docs, chunk=chunk)
+    if reason is not None or resolved is None:
+        return "not_found"
+    if quote is None:
+        return "found"
+    normalized_quote = _normalized(quote)
+    if normalized_quote and normalized_quote in _normalized(resolved):
+        return "found"
     return "not_found"
