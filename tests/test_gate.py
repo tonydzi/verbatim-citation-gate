@@ -10,6 +10,8 @@ from verbatim_citation_gate import (
     judge_support,
     normalize,
     quote_gate,
+    resolve_span,
+    span_gate,
 )
 
 # Three tiny documents. The frankenquote trap stitches real fragments from
@@ -78,6 +80,63 @@ def test_changed_document_text_does_not_reuse_stale_normalization():
 
     assert quote_gate("The replacement quote.", "changing", docs) == "found"
     assert quote_gate("The original quote.", "changing", docs) == "not_found"
+
+
+def test_valid_span_matches_the_text_gate_verdict():
+    document = DOCS["veltranib-rct"]
+    quote = "Body weight was unchanged in both arms."
+    start = document.index(quote)
+    end = start + len(quote)
+
+    assert resolve_span("veltranib-rct", start, end, DOCS) == (quote, None)
+    assert span_gate("veltranib-rct", start, end, DOCS) == quote_gate(
+        quote, "veltranib-rct", DOCS
+    )
+    assert (
+        span_gate("veltranib-rct", start, end, DOCS, quote="body weight was unchanged")
+        == "found"
+    )
+    assert (
+        span_gate("veltranib-rct", start, end, DOCS, quote="fasting plasma glucose")
+        == "not_found"
+    )
+
+
+def test_span_gate_rejects_invalid_offsets():
+    invalid_spans = [
+        (-1, 1, "negative"),
+        (5, 4, "inverted"),
+        (4, 4, "zero_length"),
+        (0, len(DOCS["veltranib-rct"]) + 1, "out_of_range"),
+        (0.0, 1, "not_int"),
+        (False, 1, "not_int"),
+    ]
+
+    for start, end, reason in invalid_spans:
+        assert resolve_span("veltranib-rct", start, end, DOCS) == (None, reason)
+        assert span_gate("veltranib-rct", start, end, DOCS) == "not_found"
+
+
+def test_span_gate_rejects_unknown_document():
+    assert resolve_span("missing", 0, 1, DOCS) == (None, "unknown_doc")
+    assert resolve_span(["a"], 0, 1, DOCS) == (None, "unknown_doc")
+    assert span_gate("missing", 0, 1, DOCS) == "not_found"
+    assert span_gate(["a"], 0, 1, DOCS) == "not_found"
+
+
+def test_span_crossing_chunk_boundary_is_rejected_not_clipped():
+    document = DOCS["veltranib-rct"]
+    quote = "Body weight was unchanged in both arms."
+    start = document.index(quote)
+    end = start + len(quote)
+
+    assert resolve_span("veltranib-rct", start, end, DOCS, chunk=(start, end - 1)) == (
+        None,
+        "crosses_chunk",
+    )
+    assert span_gate(
+        "veltranib-rct", start, end, DOCS, quote=quote, chunk=(start, end - 1)
+    ) == "not_found"
 
 
 def test_normalize_preserves_numbers_and_percent():

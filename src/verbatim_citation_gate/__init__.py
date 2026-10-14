@@ -19,7 +19,7 @@ Typical use::
     #    | "not_found" | "misattributed"
 """
 
-from .gate import GateResult, normalize, quote_gate
+from .gate import GateResult, normalize, quote_gate, resolve_span, span_gate
 from .judge import JUDGE_SYSTEM, LLMCall, Verdict, audit_citation, judge_support
 
 __version__ = "0.1.0"
@@ -27,6 +27,8 @@ __version__ = "0.1.0"
 __all__ = [
     "normalize",
     "quote_gate",
+    "resolve_span",
+    "span_gate",
     "GateResult",
     "JUDGE_SYSTEM",
     "Verdict",
