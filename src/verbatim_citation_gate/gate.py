@@ -159,6 +159,9 @@ def resolve_span(
     When ``chunk=(chunk_start, chunk_end)`` is supplied, the span must be fully
     contained by that half-open chunk. It is rejected rather than clipped.
     """
+    if not isinstance(doc_id, str):
+        return None, "unknown_doc"
+
     document = docs.get(doc_id)
     if document is None:
         return None, "unknown_doc"
@@ -191,9 +194,9 @@ def span_gate(
     """Audit a citation supplied as validated character offsets.
 
     A valid span returns ``"found"``. If ``quote`` is supplied, its normalized
-    text must also occur inside the resolved span. Every invalid offset,
-    unknown document, chunk crossing, or quote mismatch fails closed as
-    ``"not_found"``.
+    text must also occur inside the resolved span; an empty or whitespace-only
+    quote fails closed. Every invalid offset, unknown document, chunk crossing,
+    or quote mismatch fails closed as ``"not_found"``.
     """
     resolved, reason = resolve_span(doc_id, start, end, docs, chunk=chunk)
     if reason is not None or resolved is None:

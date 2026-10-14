@@ -119,7 +119,9 @@ def test_span_gate_rejects_invalid_offsets():
 
 def test_span_gate_rejects_unknown_document():
     assert resolve_span("missing", 0, 1, DOCS) == (None, "unknown_doc")
+    assert resolve_span(["a"], 0, 1, DOCS) == (None, "unknown_doc")
     assert span_gate("missing", 0, 1, DOCS) == "not_found"
+    assert span_gate(["a"], 0, 1, DOCS) == "not_found"
 
 
 def test_span_crossing_chunk_boundary_is_rejected_not_clipped():
