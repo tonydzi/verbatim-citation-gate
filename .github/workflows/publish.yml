@@ -37,6 +37,8 @@ jobs:
   publish:
     needs: build
     runs-on: ubuntu-latest
+    # Skipped until the PyPI Trusted Publisher exists (repo variable PYPI_READY=true), so a release is not a red job.
+    if: ${{ vars.PYPI_READY == 'true' }}
     environment: pypi
     permissions:
       id-token: write   # the whole point: OIDC instead of a stored token
