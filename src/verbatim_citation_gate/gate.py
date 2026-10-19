@@ -90,6 +90,35 @@ def _normalized(text: str) -> str:
     return normalize(text)
 
 
+def _is_word_char(char: str) -> bool:
+    return unicodedata.category(char)[0] in "LNM"
+
+
+def _contains(haystack: str, needle: str) -> bool:
+    """Substring test that only accepts whole-word matches.
+
+    Both inputs are already normalized. A hit is rejected when it starts or ends
+    inside a word, so ``indicated`` is not "found" inside ``contraindicated``.
+    Punctuation that normalization kept (``.``, ``%``) is not a word character,
+    so ``hypertension`` still matches ``hypertension.``.
+    """
+    if not needle:
+        return False
+    start = haystack.find(needle)
+    while start != -1:
+        end = start + len(needle)
+        before_ok = start == 0 or not (
+            _is_word_char(haystack[start - 1]) and _is_word_char(needle[0])
+        )
+        after_ok = end == len(haystack) or not (
+            _is_word_char(haystack[end]) and _is_word_char(needle[-1])
+        )
+        if before_ok and after_ok:
+            return True
+        start = haystack.find(needle, start + 1)
+    return False
+
+
 def quote_gate(quote: str, cited_doc_id: str, docs: dict[str, str]) -> GateResult:
     """Check a quote against the document it is attributed to.
 
@@ -110,10 +139,10 @@ def quote_gate(quote: str, cited_doc_id: str, docs: dict[str, str]) -> GateResul
     if not q:
         return "not_found"
     cited = docs.get(cited_doc_id)
-    if cited is not None and q in _normalized(cited):
+    if cited is not None and _contains(_normalized(cited), q):
         return "found"
     if any(
-        q in _normalized(text)
+        _contains(_normalized(text), q)
         for doc_id, text in docs.items()
         if doc_id != cited_doc_id
     ):
@@ -204,6 +233,6 @@ def span_gate(
     if quote is None:
         return "found"
     normalized_quote = _normalized(quote)
-    if normalized_quote and normalized_quote in _normalized(resolved):
+    if normalized_quote and _contains(_normalized(resolved), normalized_quote):
         return "found"
     return "not_found"

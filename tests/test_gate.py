@@ -274,3 +274,30 @@ def test_transit_damage_does_not_rescue_a_fabrication():
     """
     fabricated = "fasting pla\u00adsma glucose r\u043ese by 28 mg/dL"
     assert quote_gate(fabricated, "veltranib-rct", DOCS) == "not_found"
+
+
+# --- regressions reported by Dmitrii Vasilev (VDAI) via ANTI peer audit, 2026-10-19 ---
+
+def test_quote_inside_longer_word_is_not_found():
+    docs = {"a": "The drug is contraindicated in pregnancy."}
+    assert quote_gate("indicated", "a", docs) == "not_found"
+    assert quote_gate("contraindicated in pregnancy", "a", docs) == "found"
+
+
+def test_quote_at_word_boundary_with_punctuation_still_found():
+    docs = {"a": "Efficacy was 25%. Hypertension, mild."}
+    assert quote_gate("hypertension", "a", docs) == "found"
+    assert quote_gate("25%", "a", docs) == "found"
+    assert quote_gate("5%", "a", docs) == "not_found"
+
+
+def test_span_gate_quote_respects_word_boundaries():
+    docs = {"a": "contraindicated here"}
+    assert span_gate("a", 0, 20, docs, quote="indicated") == "not_found"
+
+
+def test_parse_verdict_two_brace_blocks():
+    from verbatim_citation_gate.judge import _parse_verdict
+    raw = ('Thinking {not json} then answer: {"reasoning": "ok", '
+           '"verdict": "supports", "confidence": 0.9} trailing {note}')
+    assert _parse_verdict(raw).verdict == "supports"

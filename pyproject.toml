@@ -41,6 +41,10 @@ Documentation = "https://tonydzi.github.io/verbatim-citation-gate/"
 [project.optional-dependencies]
 test = ["pytest>=7"]
 
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
 [tool.hatch.version]
 path = "src/verbatim_citation_gate/__init__.py"
 

@@ -27,7 +27,6 @@ your pipeline already speaks.
 from __future__ import annotations
 
 import json
-import re
 from dataclasses import dataclass
 from typing import Callable
 
@@ -75,18 +74,33 @@ class Verdict:
     confidence: float  # 0.0-1.0, the judge's own estimate
 
 
+def _first_json_object(text: str):
+    """First ``{...}`` in ``text`` that parses as a JSON object, else None.
+
+    A greedy ``{.*}`` swallows everything between the first and the last brace,
+    so prose braces before or after the verdict made the whole parse fail.
+    """
+    decoder = json.JSONDecoder()
+    pos = text.find("{")
+    while pos != -1:
+        try:
+            obj, _ = decoder.raw_decode(text, pos)
+        except ValueError:
+            obj = None
+        if isinstance(obj, dict):
+            return obj
+        pos = text.find("{", pos + 1)
+    return None
+
+
 def _parse_verdict(text: str) -> Verdict:
     """Extract a Verdict from raw model text. Fails CLOSED.
 
     Any parse failure — no JSON, missing fields, an out-of-vocabulary verdict —
     is treated as *not support*, never retried into optimism.
     """
-    match = re.search(r"\{.*\}", text or "", re.DOTALL)
-    if not match:
-        return Verdict("judge output unparseable", "unrelated", 0.0)
-    try:
-        data = json.loads(match.group(0))
-    except (ValueError, TypeError):
+    data = _first_json_object(text or "")
+    if data is None:
         return Verdict("judge output unparseable", "unrelated", 0.0)
     verdict = data.get("verdict")
     if verdict not in _VALID:
