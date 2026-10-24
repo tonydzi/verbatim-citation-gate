@@ -4,6 +4,14 @@ What shipped, in plain words. This file did not exist until 2026-10-16: the entr
 v0.2.0 were written from the tags and release notes that already existed, so they are recorded
 after the fact rather than backdated to look contemporaneous.
 
+## v0.3.1 - 2026-10-24
+
+**Three gate fixes, each with a test that fails without it.** The quote match is now whole-word, so a
+quote of "cat" no longer passes because the source says "category". The judge's verdict parser takes the
+first balanced JSON object instead of the first closing brace, so a verdict containing nested braces
+is no longer cut in half. `pytest` now finds `src` without an editable install.
+Install: `pip install "git+https://github.com/tonydzi/verbatim-citation-gate@v0.3.1"`.
+
 ## v0.3.0 - 2026-10-16
 
 **Citations by character offset now get the same fail-closed gate.** `span_gate(doc_id, start, end,

@@ -22,7 +22,7 @@ Typical use::
 from .gate import GateResult, normalize, quote_gate, resolve_span, span_gate
 from .judge import JUDGE_SYSTEM, LLMCall, Verdict, audit_citation, judge_support
 
-__version__ = "0.3.0"
+__version__ = "0.3.1"
 
 __all__ = [
     "normalize",
