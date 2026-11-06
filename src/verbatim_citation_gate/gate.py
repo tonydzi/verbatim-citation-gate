@@ -71,19 +71,60 @@ def normalize(text: str) -> str:
     folding so only lowercase mappings are needed.
     """
     text = unicodedata.normalize("NFKC", text)
-    text = _LINEBREAK_HYPHEN.sub("", text)
     # Format characters (soft hyphen, zero-width space/joiners, bidi marks) are
     # invisible *inside* words. Dropping them keeps the word whole; replacing
-    # them with a space would break it in two.
+    # them with a space would break it in two. They go before the hyphenation
+    # repair, so a zero-width space between ``-`` and the line break cannot
+    # hide the break from it.
     text = "".join(char for char in text if unicodedata.category(char) != "Cf")
+    text = _LINEBREAK_HYPHEN.sub("", text)
     text = text.casefold()
     text = unicodedata.normalize("NFKC", text)
     text = text.translate(_HOMOGLYPHS)
-    text = "".join(
-        char if char in "%." or unicodedata.category(char)[0] in "LNM" else " "
-        for char in text
-    )
-    return " ".join(text.split())
+    text = _SPACE_BEFORE_PERCENT.sub("%", text)
+    return " ".join(_keep_quantitative(text).split())
+
+
+# ``28 %`` and ``28%`` state the same quantity; the space is house style.
+_SPACE_BEFORE_PERCENT = re.compile(r"(?<=\d)\s+%")
+
+# Comparison operators change what a number claims (``risk < 5%`` is not
+# ``risk > 5%``), so they survive normalization as standalone tokens.
+_OPERATORS = "<>≤≥=±"
+
+# Characters that act as a minus or plus sign when written straight before a
+# digit. U+2212 is the true minus sign; the en dash is not, it marks ranges.
+_SIGNS = "-−+"
+
+
+def _keep_quantitative(text: str) -> str:
+    """Map every character to itself or a space, keeping what a number needs.
+
+    Letters, digits and marks are kept, as are ``.`` and ``%``. A comma is kept
+    only between two digits (``1,000``), and a sign only right before a digit
+    and not after a letter or digit (``-5%``, but ``covid-19`` and ``25-30``
+    still split). Operators are kept with a space on each side, so
+    ``p=0.05`` and ``p = 0.05`` normalize alike. Everything else is a space.
+    """
+    out = []
+    last = len(text) - 1
+    for i, char in enumerate(text):
+        if char in "%." or _is_word_char(char):
+            out.append(char)
+        elif char == "," and 0 < i < last and text[i - 1].isdigit() and text[i + 1].isdigit():
+            out.append(char)
+        elif (
+            char in _SIGNS
+            and i < last
+            and text[i + 1].isdigit()
+            and (i == 0 or not _is_word_char(text[i - 1]))
+        ):
+            out.append("-" if char in "-−" else "+")
+        elif char in _OPERATORS:
+            out.append(" " + char + " ")
+        else:
+            out.append(" ")
+    return "".join(out)
 
 
 @lru_cache(maxsize=4096)
@@ -122,9 +163,12 @@ def _is_boundary(text: str, i: int) -> bool:
         return False
     if left.isdigit() and right == "%":
         return False
-    if left.isdigit() and right == "." and i + 1 < len(text) and text[i + 1].isdigit():
+    # decimal point or thousands comma followed by a digit: ``28|.5``, ``1|,000``
+    if left.isdigit() and right in ".," and i + 1 < len(text) and text[i + 1].isdigit():
         return False
-    if left == "." and right.isdigit() and i >= 2 and text[i - 2].isdigit():
+    # digit after a decimal point, a thousands comma or a sign: ``.|5``,
+    # ``1,|000``, ``-|5``. A leading-dot decimal (``.5``) counts too.
+    if right.isdigit() and left in ".,-+":
         return False
     return True
 
@@ -165,12 +209,15 @@ def quote_gate(quote: str, cited_doc_id: str, docs: dict[str, str]) -> GateResul
     real quote with a bad citation is reported as ``"misattributed"`` (which is
     what it is) rather than being collapsed into ``"not_found"``.
     """
-    if not isinstance(quote, str):
+    if not isinstance(quote, str) or not isinstance(docs, dict):
         return "not_found"
     q = _normalized(quote)
     if not _has_content(q):
         return "not_found"
-    cited = docs.get(cited_doc_id)
+    try:
+        cited = docs.get(cited_doc_id)
+    except TypeError:  # unhashable id: it cannot name any document
+        return "not_found"
     if isinstance(cited, str) and _contains(_normalized(cited), q):
         return "found"
     if any(
@@ -220,12 +267,10 @@ def resolve_span(
     When ``chunk=(chunk_start, chunk_end)`` is supplied, the span must be fully
     contained by that half-open chunk. It is rejected rather than clipped.
     """
-    if not isinstance(doc_id, str):
+    if not isinstance(doc_id, str) or not isinstance(docs, dict) or doc_id not in docs:
         return None, "unknown_doc"
 
-    document = docs.get(doc_id)
-    if document is None:
-        return None, "unknown_doc"
+    document = docs[doc_id]
     if not isinstance(document, str):
         return None, "not_text"
 
@@ -264,6 +309,8 @@ def span_gate(
     resolved, reason = resolve_span(doc_id, start, end, docs, chunk=chunk)
     if reason is not None or resolved is None:
         return "not_found"
+    if not _has_content(_normalized(resolved)):
+        return "not_found"  # a span of whitespace or punctuation cites nothing
     if quote is None:
         return "found"
     if not isinstance(quote, str):

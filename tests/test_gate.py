@@ -351,3 +351,41 @@ def test_quote_gate_non_text_document_does_not_raise():
     assert quote_gate("Body weight", "bad", docs) == "misattributed"
     assert quote_gate("Body weight", "good", docs) == "found"
     assert quote_gate(None, "good", docs) == "not_found"
+
+
+# --- second breaker panel on the fix itself, 2026-11-06 (session Z69849) -----
+
+
+def test_digit_after_leading_dot_or_thousands_comma_is_not_found():
+    docs = {"d": "dose was .5 mg; fine of 1,000 mg; rate 28 % here"}
+    assert quote_gate("5 mg", "d", docs) == "not_found"
+    assert quote_gate("000 mg", "d", docs) == "not_found"
+    assert quote_gate("of 1", "d", docs) == "not_found"
+    assert quote_gate("rate 28", "d", docs) == "not_found"
+    assert quote_gate("fine of 1,000 mg", "d", docs) == "found"
+    assert quote_gate("was .5 mg", "d", docs) == "found"
+    assert quote_gate("rate 28%", "d", docs) == "found"
+
+
+def test_sign_and_comparison_are_load_bearing():
+    assert quote_gate("risk < 5%", "d", {"d": "risk > 5%"}) == "not_found"
+    assert quote_gate("by 5%", "d", {"d": "fell by -5%"}) == "not_found"
+    assert quote_gate("fell by -5%", "d", {"d": "fell by -5%"}) == "found"
+    assert quote_gate("risk > 5%", "d", {"d": "risk > 5%"}) == "found"
+    # a hyphen inside a word or a range is still a separator, not a sign
+    assert quote_gate("covid 19", "d", {"d": "COVID-19 cases"}) == "found"
+    assert quote_gate("25 30 mg", "d", {"d": "25-30 mg"}) == "found"
+
+
+def test_bad_argument_types_do_not_raise():
+    assert quote_gate("x", ["a"], {"a": "x"}) == "not_found"
+    assert quote_gate("x", "a", None) == "not_found"
+    assert resolve_span("d", 0, 1, {"d": None}) == (None, "not_text")
+
+
+def test_content_free_span_is_not_found():
+    assert span_gate("d", 0, 2, {"d": "  ab"}) == "not_found"
+
+
+def test_zero_width_char_before_line_break_still_rejoins():
+    assert quote_gate("procedural", "d", {"d": "Proc-​\nedural"}) == "found"

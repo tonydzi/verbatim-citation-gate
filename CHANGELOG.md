@@ -22,6 +22,19 @@ panel run against the public demo found each one; each now has a test that fails
   raising `TypeError`; `span_gate` returns `not_found`. `quote_gate` skips non-string documents and
   a non-string quote is `not_found`, so it keeps its "raises nothing" promise too.
 
+A second breaker panel (six models) then attacked the fix itself and found more of the same class,
+each confirmed by a reproduction and now covered by a test that fails without the change:
+
+- `5` was "found" in `.5`, `000` and `of 1` in `1,000`, `rate 28` in `rate 28 %`. A leading-dot
+  decimal, a comma between digits and a space before `%` are now part of the number.
+- `risk < 5%` was "found" in `risk > 5%`, and `by 5%` in `by -5%`. Comparison operators (`< > ≤ ≥ = ±`)
+  and a sign written right before a digit now survive normalization. A hyphen inside a word or a
+  range (`COVID-19`, `25-30`) is still a separator.
+- `quote_gate` no longer raises on an unhashable `cited_doc_id` or a `docs` that is not a dict;
+  `resolve_span` reports a `None` document as `not_text`; `span_gate` rejects a span with no letter
+  or digit in it.
+- A zero-width character between a line-break hyphen and the break no longer stops the rejoin.
+
 Benchmark unchanged: detection 1.0000 over 1 221 bad citations, false positive rate 0.1721 over
 3 371 honest quotes, byte-identical output to v0.3.1.
 
