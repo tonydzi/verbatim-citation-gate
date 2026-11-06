@@ -301,3 +301,53 @@ def test_parse_verdict_two_brace_blocks():
     raw = ('Thinking {not json} then answer: {"reasoning": "ok", '
            '"verdict": "supports", "confidence": 0.9} trailing {note}')
     assert _parse_verdict(raw).verdict == "supports"
+
+
+# --- regressions found by the breaker panel, 2026-11-06 (session Z69562) -----
+#
+# Each of these returned a false "found" (or raised) before the fix. A false
+# "found" is the one verdict this gate must never hand out for free.
+
+
+def test_partial_number_inside_decimal_is_not_found():
+    """`28` is not a quote of `28.5`; the decimal point does not end the number."""
+    docs = {"d": "dose 28.5 mg, pi is 3.14, rate 28%"}
+    assert quote_gate("28", "d", docs) == "not_found"
+    assert quote_gate("3", "d", docs) == "not_found"
+    assert quote_gate("5 mg", "d", docs) == "not_found"
+    assert quote_gate("dose 28.", "d", docs) == "not_found"
+    assert quote_gate("rate 28", "d", docs) == "not_found"
+    # whole numbers, and a sentence-final period, still match
+    assert quote_gate("dose 28.5 mg", "d", docs) == "found"
+    assert quote_gate("3.14", "d", docs) == "found"
+    assert quote_gate("rate 28%", "d", docs) == "found"
+    assert quote_gate("fell by 28", "x", {"x": "Glucose fell by 28. Weight held."}) == "found"
+
+
+def test_punctuation_only_quote_is_not_found():
+    """A quote with no letter or digit in it quotes nothing."""
+    docs = {"d": "Body weight. Fine. 25%"}
+    assert quote_gate(".", "d", docs) == "not_found"
+    assert quote_gate("%", "d", docs) == "not_found"
+    assert quote_gate(". .", "d", docs) == "not_found"
+    assert span_gate("d", 0, 12, docs, quote=".") == "not_found"
+
+
+def test_line_break_hyphen_between_digits_is_a_range_not_a_word():
+    """`25-\n30` is a range broken across a line; rejoining it invents `2530`."""
+    docs = {"d": "range 25-\n30 mg"}
+    assert quote_gate("2530 mg", "d", docs) == "not_found"
+    assert quote_gate("range 25-30 mg", "d", docs) == "found"
+
+
+def test_resolve_span_non_text_document_does_not_raise():
+    """The contract is `(None, reason)`, never an exception."""
+    assert resolve_span("d", 0, 1, {"d": 123}) == (None, "not_text")
+    assert span_gate("d", 0, 1, {"d": 123}) == "not_found"
+
+
+def test_quote_gate_non_text_document_does_not_raise():
+    docs = {"bad": 123, "good": "Body weight was unchanged."}
+    assert quote_gate("Body weight", "bad", docs) == "misattributed"
+    assert quote_gate("Body weight", "good", docs) == "found"
+    assert quote_gate(None, "good", docs) == "not_found"

@@ -4,6 +4,27 @@ What shipped, in plain words. This file did not exist until 2026-10-16: the entr
 v0.2.0 were written from the tags and release notes that already existed, so they are recorded
 after the fact rather than backdated to look contemporaneous.
 
+## Unreleased - 2026-11-06
+
+**Four ways the gate said "found" (or crashed) on a citation that should fail, closed.** A breaker
+panel run against the public demo found each one; each now has a test that fails on v0.3.1.
+
+- A number inside a longer number no longer matches. `28` was "found" in `dose 28.5 mg`, `3` in
+  `3.14`, `rate 28` in `rate 28%`: normalization keeps `.` and `%`, and the word-boundary check
+  treated them as boundaries. A decimal point between digits and a `%` after a digit now count as
+  part of the number. A sentence-final period still ends a word, so `fell by 28` matches
+  `fell by 28.`.
+- A quote with no letter or digit in it (`.`, `%`, `. .`) is `not_found`. It used to be "found" in
+  almost any document, since a period survives normalization.
+- Line-break hyphen repair only joins two letters. `range 25-\n30 mg` was normalized to
+  `range 2530 mg`, so the invented quote `2530 mg` was "found". `Proc-\nedural` still rejoins.
+- `resolve_span` returns `(None, "not_text")` when the document is not a string, instead of
+  raising `TypeError`; `span_gate` returns `not_found`. `quote_gate` skips non-string documents and
+  a non-string quote is `not_found`, so it keeps its "raises nothing" promise too.
+
+Benchmark unchanged: detection 1.0000 over 1 221 bad citations, false positive rate 0.1721 over
+3 371 honest quotes, byte-identical output to v0.3.1.
+
 ## v0.3.1 - 2026-10-24
 
 **Three gate fixes, each with a test that fails without it.** The quote match is now whole-word, so a

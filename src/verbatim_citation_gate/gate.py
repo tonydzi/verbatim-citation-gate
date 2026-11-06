@@ -31,8 +31,10 @@ GateResult = str  # Literal["found", "misattributed", "not_found"]
 # hyphen is an artifact of the layout, not of the word, so it is removed along
 # with the break — otherwise ``Proc-\nedural`` and ``Procedural`` never match.
 # A hyphen NOT followed by a line break is left alone and later becomes a space,
-# so ``state-of-the-art`` keeps its internal boundaries.
-_LINEBREAK_HYPHEN = re.compile(r"[-‐‑‒–]\s*[\r\n]\s*")
+# so ``state-of-the-art`` keeps its internal boundaries. The repair only fires
+# between two letters: ``25-\n30`` is a range broken across a line, and gluing
+# it into ``2530`` would invent a number the document never states.
+_LINEBREAK_HYPHEN = re.compile(r"(?<=[^\W\d_])[-‐‑‒–]\s*[\r\n]\s*(?=[^\W\d_])")
 
 # Characters that are visually identical to ASCII letters but encode as
 # different codepoints. They arrive when text round-trips through a tool that
@@ -94,26 +96,54 @@ def _is_word_char(char: str) -> bool:
     return unicodedata.category(char)[0] in "LNM"
 
 
+def _has_content(normalized: str) -> bool:
+    """True when a normalized quote holds at least one letter or digit.
+
+    Normalization keeps ``.`` and ``%``, so a "quote" of ``.`` survives it, and
+    a lone period occurs in nearly every document. A quote with nothing to read
+    in it quotes nothing; it must never come back ``"found"``.
+    """
+    return any(_is_word_char(char) for char in normalized)
+
+
+def _is_boundary(text: str, i: int) -> bool:
+    """Whether a match may start or end at position ``i`` of normalized ``text``.
+
+    The cut falls between ``text[i - 1]`` and ``text[i]``. It is rejected when
+    it lands inside a word, or inside a number: ``.`` between two digits is a
+    decimal point (``28|.5``, ``28.|5``) and ``%`` belongs to the digit before
+    it (``28|%``). Otherwise ``28`` would be "found" in ``28.5 mg``, a quote
+    that states a different quantity than the source.
+    """
+    if i <= 0 or i >= len(text):
+        return True
+    left, right = text[i - 1], text[i]
+    if _is_word_char(left) and _is_word_char(right):
+        return False
+    if left.isdigit() and right == "%":
+        return False
+    if left.isdigit() and right == "." and i + 1 < len(text) and text[i + 1].isdigit():
+        return False
+    if left == "." and right.isdigit() and i >= 2 and text[i - 2].isdigit():
+        return False
+    return True
+
+
 def _contains(haystack: str, needle: str) -> bool:
-    """Substring test that only accepts whole-word matches.
+    """Substring test that only accepts whole-word, whole-number matches.
 
     Both inputs are already normalized. A hit is rejected when it starts or ends
-    inside a word, so ``indicated`` is not "found" inside ``contraindicated``.
-    Punctuation that normalization kept (``.``, ``%``) is not a word character,
-    so ``hypertension`` still matches ``hypertension.``.
+    inside a word, so ``indicated`` is not "found" inside ``contraindicated``,
+    or inside a number, so ``28`` is not "found" inside ``28.5`` or ``28%``.
+    A sentence-final period is not part of a number, so ``hypertension`` still
+    matches ``hypertension.`` and ``fell by 28`` matches ``fell by 28.``.
+    A needle with no letter or digit never matches.
     """
-    if not needle:
+    if not _has_content(needle):
         return False
     start = haystack.find(needle)
     while start != -1:
-        end = start + len(needle)
-        before_ok = start == 0 or not (
-            _is_word_char(haystack[start - 1]) and _is_word_char(needle[0])
-        )
-        after_ok = end == len(haystack) or not (
-            _is_word_char(haystack[end]) and _is_word_char(needle[-1])
-        )
-        if before_ok and after_ok:
+        if _is_boundary(haystack, start) and _is_boundary(haystack, start + len(needle)):
             return True
         start = haystack.find(needle, start + 1)
     return False
@@ -135,14 +165,16 @@ def quote_gate(quote: str, cited_doc_id: str, docs: dict[str, str]) -> GateResul
     real quote with a bad citation is reported as ``"misattributed"`` (which is
     what it is) rather than being collapsed into ``"not_found"``.
     """
+    if not isinstance(quote, str):
+        return "not_found"
     q = _normalized(quote)
-    if not q:
+    if not _has_content(q):
         return "not_found"
     cited = docs.get(cited_doc_id)
-    if cited is not None and _contains(_normalized(cited), q):
+    if isinstance(cited, str) and _contains(_normalized(cited), q):
         return "found"
     if any(
-        _contains(_normalized(text), q)
+        isinstance(text, str) and _contains(_normalized(text), q)
         for doc_id, text in docs.items()
         if doc_id != cited_doc_id
     ):
@@ -181,8 +213,8 @@ def resolve_span(
 
     Offsets are Python string indices (Unicode code points). A valid span
     returns ``(text, None)``. Invalid input returns ``(None, reason)`` without
-    raising, where ``reason`` is one of ``unknown_doc``, ``not_int``,
-    ``negative``, ``inverted``, ``zero_length``, ``out_of_range``, or
+    raising, where ``reason`` is one of ``unknown_doc``, ``not_text`` (the
+    document is not a string), ``not_int``, ``negative``, ``inverted``, ``zero_length``, ``out_of_range``, or
     ``crosses_chunk``.
 
     When ``chunk=(chunk_start, chunk_end)`` is supplied, the span must be fully
@@ -194,6 +226,8 @@ def resolve_span(
     document = docs.get(doc_id)
     if document is None:
         return None, "unknown_doc"
+    if not isinstance(document, str):
+        return None, "not_text"
 
     reason = _validate_bounds(start, end, len(document))
     if reason is not None:
@@ -232,7 +266,9 @@ def span_gate(
         return "not_found"
     if quote is None:
         return "found"
+    if not isinstance(quote, str):
+        return "not_found"
     normalized_quote = _normalized(quote)
-    if normalized_quote and _contains(_normalized(resolved), normalized_quote):
+    if _has_content(normalized_quote) and _contains(_normalized(resolved), normalized_quote):
         return "found"
     return "not_found"
