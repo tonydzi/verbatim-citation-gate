@@ -35,6 +35,16 @@ each confirmed by a reproduction and now covered by a test that fails without th
   or digit in it.
 - A zero-width character between a line-break hyphen and the break no longer stops the rejoin.
 
+A third panel run on that fix (2026-11-13) found three smaller gaps, fixed with tests:
+
+- An unhashable `cited_doc_id` now gives `misattributed` when the quote is real elsewhere, as the
+  docstring always promised, instead of `not_found`.
+- Line-break hyphen repair also sees Unicode line breaks (U+0085, U+2028, U+2029).
+- A `str` subclass without a hash no longer crashes the gate through its normalization cache.
+
+Known limits, by design: punctuation other than `.` `%` `,` and the operators is dropped, so
+`Stop now` matches `Stop? Now.`; a hyphen with spaces on both sides is a dash, not a minus.
+
 Benchmark unchanged: detection 1.0000 over 1 221 bad citations, false positive rate 0.1721 over
 3 371 honest quotes, byte-identical output to v0.3.1.
 

@@ -34,7 +34,7 @@ GateResult = str  # Literal["found", "misattributed", "not_found"]
 # so ``state-of-the-art`` keeps its internal boundaries. The repair only fires
 # between two letters: ``25-\n30`` is a range broken across a line, and gluing
 # it into ``2530`` would invent a number the document never states.
-_LINEBREAK_HYPHEN = re.compile(r"(?<=[^\W\d_])[-‐‑‒–]\s*[\r\n]\s*(?=[^\W\d_])")
+_LINEBREAK_HYPHEN = re.compile(r"(?<=[^\W\d_])[-‐‑‒–]\s*[\r\n\x85  ]\s*(?=[^\W\d_])")
 
 # Characters that are visually identical to ASCII letters but encode as
 # different codepoints. They arrive when text round-trips through a tool that
@@ -128,9 +128,19 @@ def _keep_quantitative(text: str) -> str:
 
 
 @lru_cache(maxsize=4096)
-def _normalized(text: str) -> str:
-    """Normalize repeated text once, retaining up to 4,096 raw inputs."""
+def _normalized_cached(text: str) -> str:
     return normalize(text)
+
+
+def _normalized(text: str) -> str:
+    """Normalize repeated text once, retaining up to 4,096 raw inputs.
+
+    Only exact ``str`` goes through the cache: a ``str`` subclass may be
+    unhashable, and the gate promises not to raise on its inputs.
+    """
+    if type(text) is not str:
+        return normalize(str(text))
+    return _normalized_cached(text)
 
 
 def _is_word_char(char: str) -> bool:
@@ -216,8 +226,8 @@ def quote_gate(quote: str, cited_doc_id: str, docs: dict[str, str]) -> GateResul
         return "not_found"
     try:
         cited = docs.get(cited_doc_id)
-    except TypeError:  # unhashable id: it cannot name any document
-        return "not_found"
+    except TypeError:  # unhashable id: it names no document, but the quote
+        cited = None   # may still be real elsewhere, so keep checking
     if isinstance(cited, str) and _contains(_normalized(cited), q):
         return "found"
     if any(

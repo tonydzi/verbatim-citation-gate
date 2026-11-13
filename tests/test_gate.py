@@ -378,7 +378,8 @@ def test_sign_and_comparison_are_load_bearing():
 
 
 def test_bad_argument_types_do_not_raise():
-    assert quote_gate("x", ["a"], {"a": "x"}) == "not_found"
+    assert quote_gate("x", ["a"], {"a": "x"}) == "misattributed"  # real quote, bad id
+    assert quote_gate("nope", ["a"], {"a": "x"}) == "not_found"
     assert quote_gate("x", "a", None) == "not_found"
     assert resolve_span("d", 0, 1, {"d": None}) == (None, "not_text")
 
@@ -389,3 +390,23 @@ def test_content_free_span_is_not_found():
 
 def test_zero_width_char_before_line_break_still_rejoins():
     assert quote_gate("procedural", "d", {"d": "Proc-​\nedural"}) == "found"
+
+
+# --- third breaker panel on 2113d60, 2026-11-13 (session Z69849) -------------
+
+
+def test_unhashable_citation_still_reports_a_real_quote_as_misattributed():
+    """The docstring promises: a real quote with a bad citation is misattributed."""
+    assert quote_gate("x y", ["a"], {"a": "x y"}) == "misattributed"
+
+
+def test_unicode_line_separator_after_hyphen_still_rejoins():
+    assert quote_gate("procedural", "d", {"d": "Proc- edural"}) == "found"
+
+
+def test_unhashable_str_subclass_does_not_raise():
+    class S(str):
+        __hash__ = None
+
+    assert quote_gate(S("x"), "d", {"d": "x"}) == "found"
+    assert quote_gate("x", "d", {"d": S("x")}) == "found"
