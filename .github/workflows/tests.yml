@@ -15,7 +15,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        # ubuntu-latest became 26.04 in Nov 2026 and setup-python has no 3.9 for it.
+        # 3.9 is the declared floor, so pin the image instead of dropping the floor.
+        os: [ubuntu-24.04, macos-latest, windows-latest]
         python: ["3.9", "3.11", "3.13"]
     steps:
       - uses: actions/checkout@v4
@@ -33,7 +35,7 @@ jobs:
     # the only place that proves `pip install verbatim-citation-gate` gives a
     # working import on the declared floor -- without it the PyPI page would be
     # an untested claim.
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # 3.9 is the floor; setup-python has no 3.9 for ubuntu 26.04
     strategy:
       fail-fast: false
       matrix:
