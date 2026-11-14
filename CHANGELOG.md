@@ -4,7 +4,7 @@ What shipped, in plain words. This file did not exist until 2026-10-16: the entr
 v0.2.0 were written from the tags and release notes that already existed, so they are recorded
 after the fact rather than backdated to look contemporaneous.
 
-## Unreleased - 2026-11-06
+## v0.3.2 - 2026-11-14
 
 **Four ways the gate said "found" (or crashed) on a citation that should fail, closed.** A breaker
 panel run against the public demo found each one; each now has a test that fails on v0.3.1.
