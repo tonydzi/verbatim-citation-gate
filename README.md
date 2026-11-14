@@ -8,7 +8,7 @@ Checks that a quote an AI cites really appears word for word in the source docum
 ## Quick start
 1. Install Python 3.9 or newer.
 2. Run `pip install "git+https://github.com/tonydzi/verbatim-citation-gate"`.
-3. Run the 4-line example from "Use" below, or `python examples/demo.py` from a clone.
+3. Run the short example under "Quickstart - 30 seconds" in Details below. Or, from a clone of the repo, run `pip install -e .` and then `python examples/demo.py` (the demo fails with `ModuleNotFoundError` if the package is not installed).
 
 **Done when:** a made-up quote prints `not_found` and a real quote prints `found`. No API key or internet is needed for this first check.
 
@@ -39,7 +39,7 @@ python -c "from verbatim_citation_gate import quote_gate; d={'a':'Body weight wa
 # expected: found not_found
 pytest -q          # from a clone, after the test extra: 45 passed
 ```
-Without installing, from a clone: `PYTHONPATH=src python examples/demo.py` prints "4 citations audited - 3 rejected for free, 1 reached the model" and exits 0.
+Without installing, from a clone: `PYTHONPATH=src python examples/demo.py` (PowerShell: `$env:PYTHONPATH="src"; python examples/demo.py`) prints, among other lines, `4 citations audited - 3 rejected for free, 1 reached the model` and exits 0. Without `PYTHONPATH` and without installing it exits 1 with `ModuleNotFoundError`. Both Verify commands can fail: the one-liner prints something other than `found not_found` if the gate is broken, and `pytest -q` reports failures; `pytest` needs `pip install -e ".[test]"` first (or `PYTHONPATH=src python -m pytest -q tests`).
 
 ### Uninstall / rollback
 ```bash
