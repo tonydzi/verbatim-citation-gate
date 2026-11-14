@@ -1,5 +1,59 @@
 # verbatim-citation-gate
 
+Checks that a quote an AI cites really appears word for word in the source document, before the answer reaches the user.
+
+**Who it's for:** developers whose chatbot or RAG system (a bot that answers from your documents) shows citations.
+**What you get:** a free, instant verdict per quote (found, not found, or quoted from the wrong document), plus an optional second check by a model of your choice.
+
+## Quick start
+1. Install Python 3.9 or newer.
+2. Run `pip install "git+https://github.com/tonydzi/verbatim-citation-gate"`.
+3. Run the 4-line example from "Use" below, or `python examples/demo.py` from a clone.
+
+**Done when:** a made-up quote prints `not_found` and a real quote prints `found`. No API key or internet is needed for this first check.
+
+> Want an AI agent to do it for you? Paste this to Claude Code / Codex / Cursor:
+> "Read the 'For AI agents' section of https://github.com/tonydzi/verbatim-citation-gate and set it up for me."
+
+## For AI agents
+
+### Preconditions
+- Python 3.9 to 3.13, git. The gate has zero dependencies. Not on PyPI: install from the repository.
+- The optional judge stage needs a model you already use. Ask the human which model and where its API key lives. Never invent a key.
+
+### Install
+```bash
+pip install "git+https://github.com/tonydzi/verbatim-citation-gate"
+# from a clone, with the test extra:
+pip install -e ".[test]"
+```
+
+### Configure
+- Stage 1 needs nothing: `quote_gate(quote, doc_id, docs)` where `docs` is a dict of doc id to full text.
+- Stage 2 is optional: pass `llm_call=<function(system, user) -> str>` to `audit_citation(...)`. Wire it to the human's own model client. See `examples/quickstart.py`.
+- Unparseable judge output fails closed: it never counts as support.
+
+### Verify
+```bash
+python -c "from verbatim_citation_gate import quote_gate; d={'a':'Body weight was unchanged in both arms.'}; print(quote_gate('Body weight was unchanged in both arms.','a',d), quote_gate('Dramatic weight loss.','a',d))"
+# expected: found not_found
+pytest -q          # from a clone, after the test extra: 45 passed
+```
+Without installing, from a clone: `PYTHONPATH=src python examples/demo.py` prints "4 citations audited - 3 rejected for free, 1 reached the model" and exits 0.
+
+### Uninstall / rollback
+```bash
+pip uninstall verbatim-citation-gate
+```
+
+### Rules for the agent
+- Do not add dependencies to the gate and do not loosen the fail-closed rule.
+- Keep API keys out of the repo, out of commits and out of logs.
+- A `found` verdict only means the words exist in the document. It does not mean the claim is true.
+- Publishing to PyPI or bumping the version needs the human's approval.
+
+## Details
+
 [![tests](https://github.com/tonydzi/verbatim-citation-gate/actions/workflows/tests.yml/badge.svg)](https://github.com/tonydzi/verbatim-citation-gate/actions/workflows/tests.yml)
 [![python](https://img.shields.io/badge/python-3.9%20%E2%80%93%203.13-blue)](https://github.com/tonydzi/verbatim-citation-gate/blob/master/pyproject.toml)
 [![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
