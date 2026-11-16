@@ -7,7 +7,7 @@ Checks that a quote an AI cites really appears word for word in the source docum
 
 ## Quick start
 1. Install Python 3.9 or newer.
-2. Run `pip install "git+https://github.com/tonydzi/verbatim-citation-gate"`.
+2. Run `pip install verbatim-citation-gate`.
 3. Run the short example under "Quickstart - 30 seconds" in Details below. Or, from a clone of the repo, run `pip install -e .` and then `python examples/demo.py` (the demo fails with `ModuleNotFoundError` if the package is not installed).
 
 **Done when:** a made-up quote prints `not_found` and a real quote prints `found`. No API key or internet is needed for this first check.
@@ -18,11 +18,13 @@ Checks that a quote an AI cites really appears word for word in the source docum
 ## For AI agents
 
 ### Preconditions
-- Python 3.9 to 3.13, git. The gate has zero dependencies. Not on PyPI: install from the repository.
+- Python 3.9 to 3.13 (git only to install from source). The gate has zero dependencies. Install from PyPI: `pip install verbatim-citation-gate` (0.3.2 on PyPI, checked 2026-11-16).
 - The optional judge stage needs a model you already use. Ask the human which model and where its API key lives. Never invent a key.
 
 ### Install
 ```bash
+pip install verbatim-citation-gate
+# latest main instead of the release:
 pip install "git+https://github.com/tonydzi/verbatim-citation-gate"
 # from a clone, with the test extra:
 pip install -e ".[test]"
@@ -68,7 +70,7 @@ The model half is `src/verbatim_citation_gate/judge.py`, and plugs into whatever
 ## Quickstart — 30 seconds, no API key
 
 ```bash
-pip install "git+https://github.com/tonydzi/verbatim-citation-gate"
+pip install verbatim-citation-gate
 ```
 
 ```python
@@ -130,9 +132,12 @@ an unverifiable citation never counts as support.
 
 ## Install
 
-Not on PyPI yet — install from the repository:
+From PyPI:
 
 ```bash
+pip install verbatim-citation-gate
+
+# or the latest main from the repository:
 pip install "git+https://github.com/tonydzi/verbatim-citation-gate"
 
 # from a clone, with the test extra:
@@ -211,7 +216,6 @@ especially [#1](https://github.com/tonydzi/verbatim-citation-gate/issues/1).
 |---|---|---|
 | Minimum-evidence rule | a one-word quote currently returns `found` | [#4](https://github.com/tonydzi/verbatim-citation-gate/issues/4) |
 | Citations by doc id / offset | the gate presumes quote-style citations | [#9](https://github.com/tonydzi/verbatim-citation-gate/issues/9) |
-| PyPI package | so `pip install verbatim-citation-gate` is real | [#8](https://github.com/tonydzi/verbatim-citation-gate/issues/8) |
 
 **Shipped from this table** — all three fixed by outside contributor [Guan Tong](https://github.com/happykawayigt),
 who claimed them off the issue list and had the first PR open within the hour: Unicode-aware normalization
