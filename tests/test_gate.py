@@ -410,3 +410,14 @@ def test_unhashable_str_subclass_does_not_raise():
 
     assert quote_gate(S("x"), "d", {"d": "x"}) == "found"
     assert quote_gate("x", "d", {"d": S("x")}) == "found"
+
+
+# --- retro breaker panel, 2026-11-16 (session Z69849) ------------------------
+
+
+def test_not_equal_is_not_equal():
+    """Dropping "!" turned "x != 5" into "x = 5": the opposite claim."""
+    assert quote_gate("x = 5", "d", {"d": "x != 5"}) == "not_found"
+    assert quote_gate("x != 5", "d", {"d": "x != 5"}) == "found"
+    assert quote_gate("x ≠ 5", "d", {"d": "x != 5"}) == "found"
+    assert quote_gate("x = 5", "d", {"d": "x ≠ 5"}) == "not_found"

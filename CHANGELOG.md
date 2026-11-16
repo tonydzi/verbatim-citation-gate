@@ -4,6 +4,11 @@ What shipped, in plain words. This file did not exist until 2026-10-16: the entr
 v0.2.0 were written from the tags and release notes that already existed, so they are recorded
 after the fact rather than backdated to look contemporaneous.
 
+## Unreleased - 2026-11-16
+
+- `x = 5` was "found" in `x != 5`: the `!` was dropped, leaving the opposite claim. `!=` now
+  normalizes to `≠`, which survives as an operator token. Found by the retro breaker panel.
+
 ## v0.3.2 - 2026-11-14
 
 **Four ways the gate said "found" (or crashed) on a citation that should fail, closed.** A breaker

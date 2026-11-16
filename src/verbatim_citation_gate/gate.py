@@ -82,6 +82,8 @@ def normalize(text: str) -> str:
     text = unicodedata.normalize("NFKC", text)
     text = text.translate(_HOMOGLYPHS)
     text = _SPACE_BEFORE_PERCENT.sub("%", text)
+    # ``!=`` is one operator; dropping ``!`` would leave ``=``, the opposite claim.
+    text = text.replace("!=", "≠")
     return " ".join(_keep_quantitative(text).split())
 
 
@@ -90,7 +92,7 @@ _SPACE_BEFORE_PERCENT = re.compile(r"(?<=\d)\s+%")
 
 # Comparison operators change what a number claims (``risk < 5%`` is not
 # ``risk > 5%``), so they survive normalization as standalone tokens.
-_OPERATORS = "<>≤≥=±"
+_OPERATORS = "<>≤≥=≠±"
 
 # Characters that act as a minus or plus sign when written straight before a
 # digit. U+2212 is the true minus sign; the en dash is not, it marks ranges.
