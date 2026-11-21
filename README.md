@@ -39,7 +39,7 @@ pip install -e ".[test]"
 ```bash
 python -c "from verbatim_citation_gate import quote_gate; d={'a':'Body weight was unchanged in both arms.'}; print(quote_gate('Body weight was unchanged in both arms.','a',d), quote_gate('Dramatic weight loss.','a',d))"
 # expected: found not_found
-pytest -q          # from a clone, after the test extra: 45 passed
+pytest -q          # from a clone, after the test extra: 46 passed
 ```
 Without installing, from a clone: `PYTHONPATH=src python examples/demo.py` (PowerShell: `$env:PYTHONPATH="src"; python examples/demo.py`) prints, among other lines, `4 citations audited - 3 rejected for free, 1 reached the model` and exits 0. Without `PYTHONPATH` and without installing it exits 1 with `ModuleNotFoundError`. Both Verify commands can fail: the one-liner prints something other than `found not_found` if the gate is broken, and `pytest -q` reports failures; `pytest` needs `pip install -e ".[test]"` first (or `PYTHONPATH=src python -m pytest -q tests`).
 
